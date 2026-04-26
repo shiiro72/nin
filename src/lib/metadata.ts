@@ -4,6 +4,7 @@ export const CHARACTER_MAP: Record<number, { sideIcon: string }> = {
   10000002: { sideIcon: "UI_AvatarIcon_Side_Ayaka" },
   10000003: { sideIcon: "UI_AvatarIcon_Side_Qin" },
   10000005: { sideIcon: "UI_AvatarIcon_Side_PlayerBoy" },
+  10000006: { sideIcon: "UI_AvatarIcon_Side_Lisa" },
   10000007: { sideIcon: "UI_AvatarIcon_Side_PlayerGirl" },
   10000014: { sideIcon: "UI_AvatarIcon_Side_Barbara" },
   10000015: { sideIcon: "UI_AvatarIcon_Side_Kaeya" },
@@ -93,7 +94,46 @@ export const CHARACTER_MAP: Record<number, { sideIcon: string }> = {
   10000104: { sideIcon: "UI_AvatarIcon_Side_Chasca" },
   10000105: { sideIcon: "UI_AvatarIcon_Side_Olorun" },
   10000106: { sideIcon: "UI_AvatarIcon_Side_Mavuika" },
+  10000107: { sideIcon: "UI_AvatarIcon_Side_Citlali" },
+  10000108: { sideIcon: "UI_AvatarIcon_Side_Lanyan" },
+  10000109: { sideIcon: "UI_AvatarIcon_Side_Mizuki" },
+  10000110: { sideIcon: "UI_AvatarIcon_Side_Iansan" },
+  10000111: { sideIcon: "UI_AvatarIcon_Side_Varesa" },
+  10000112: { sideIcon: "UI_AvatarIcon_Side_Escoffier" },
+  10000113: { sideIcon: "UI_AvatarIcon_Side_Ifa" },
+  10000114: { sideIcon: "UI_AvatarIcon_Side_SkirkNew" },
+  10000115: { sideIcon: "UI_AvatarIcon_Side_Dahlia" },
+  10000116: { sideIcon: "UI_AvatarIcon_Side_Ineffa" },
+  10000119: { sideIcon: "UI_AvatarIcon_Side_Lauma" },
+  10000120: { sideIcon: "UI_AvatarIcon_Side_Flins" },
+  10000121: { sideIcon: "UI_AvatarIcon_Side_Aino" },
+  10000122: { sideIcon: "UI_AvatarIcon_Side_Nefer" },
+  10000123: { sideIcon: "UI_AvatarIcon_Side_Durin" },
+  10000124: { sideIcon: "UI_AvatarIcon_Side_Jahoda" },
 };
+
+export const MAX_STAT_ROLLS: Record<string, number> = {
+  FIGHT_PROP_HP: 298.75,
+  FIGHT_PROP_ATTACK: 19.45,
+  FIGHT_PROP_DEFENSE: 23.15,
+  FIGHT_PROP_HP_PERCENT: 5.83,
+  FIGHT_PROP_ATTACK_PERCENT: 5.83,
+  FIGHT_PROP_DEFENSE_PERCENT: 7.29,
+  FIGHT_PROP_CRITICAL: 3.89,
+  FIGHT_PROP_CRITICAL_HURT: 7.77,
+  FIGHT_PROP_CHARGE_EFFICIENCY: 6.48,
+  FIGHT_PROP_ELEMENT_MASTERY: 23.31,
+};
+
+export function calculateRV(substats: { type: string; value: number }[]): number {
+  return substats.reduce((total, sub) => {
+    const maxRoll = MAX_STAT_ROLLS[sub.type];
+    if (maxRoll) {
+      return total + (sub.value / maxRoll) * 100;
+    }
+    return total;
+  }, 0);
+}
 
 export const ARTIFACT_SLOT_MAP: Record<string, string> = {
   EQUIP_BRACER: "Flower",
