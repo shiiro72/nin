@@ -2,8 +2,13 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
+const supabaseServiceKey = process.env.NEXT_SUPABASE_SECRET_KEY || '';
 
+// For client-side: read-only
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// For server-side: privileged operations (upsert)
+export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
 export interface Profile {
   uid: string;

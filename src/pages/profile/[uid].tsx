@@ -7,6 +7,7 @@ import ArtifactCard from '../../components/ArtifactCard';
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { CHARACTER_MAP } from '@/lib/metadata';
 
 export default function Profile() {
   const router = useRouter();
@@ -71,33 +72,36 @@ export default function Profile() {
           <div className="lg:col-span-4 space-y-4">
             <h2 className="text-sm font-bold uppercase text-zinc-400">Showcase</h2>
             <div className="grid grid-cols-1 gap-3">
-              {characters.map((char) => (
-                <button
-                  key={char.id}
-                  onClick={() => setSelectedChar(char)}
-                  className={`group relative overflow-hidden rounded-xl border p-4 text-left transition-all ${
-                    selectedChar?.id === char.id
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                      : 'border-zinc-200 bg-white hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="relative h-10 w-10">
-                      <Image
-                        src={`https://enka.network/ui/UI_AvatarIcon_Side_${char.character_id}.png`}
-                        fill
-                        className="object-contain"
-                        alt=""
-                        unoptimized
-                      />
+              {characters.map((char) => {
+                const sideIcon = CHARACTER_MAP[char.character_id]?.sideIcon || `UI_AvatarIcon_Side_${char.character_id}`;
+                return (
+                  <button
+                    key={char.id}
+                    onClick={() => setSelectedChar(char)}
+                    className={`group relative overflow-hidden rounded-xl border p-4 text-left transition-all ${
+                      selectedChar?.id === char.id
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                        : 'border-zinc-200 bg-white hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="relative h-10 w-10">
+                        <Image
+                          src={`https://enka.network/ui/${sideIcon}.png`}
+                          fill
+                          className="object-contain"
+                          alt=""
+                          unoptimized
+                        />
+                      </div>
+                      <div>
+                        <p className="font-bold">Lvl {char.level}</p>
+                        <p className="text-xs text-zinc-500">CV: {char.crit_value?.toFixed(1)}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-bold">Lvl {char.level}</p>
-                      <p className="text-xs text-zinc-500">CV: {char.crit_value?.toFixed(1)}</p>
-                    </div>
-                  </div>
-                </button>
-              ))}
+                  </button>
+                );
+              })}
             </div>
           </div>
 

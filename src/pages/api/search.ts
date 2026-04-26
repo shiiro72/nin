@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { fetchEnkaData, parseCharacterData } from '../../lib/enka';
-import { supabase } from '../../lib/supabase';
+import { supabaseAdmin } from '../../lib/supabase';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // Check if input is likely a username (not just digits)
   if (!/^\d+$/.test(input)) {
     // Try to find the UID from the profiles table based on nickname
-    const { data: profile, error: profileSearchError } = await supabase
+    const { data: profile, error: profileSearchError } = await supabaseAdmin
       .from('profiles')
       .select('uid')
       .ilike('nickname', `%${input}%`)
@@ -35,7 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const data = await fetchEnkaData(uid);
 
     // Upsert Profile
-    const { error: profileError } = await supabase.from('profiles').upsert({
+    const { error: profileError } = await supabaseAdmin.from('profiles').upsert({
       uid: data.uid,
       nickname: data.playerInfo.nickname,
       level: data.playerInfo.level,
@@ -66,7 +66,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
 
         // Upsert Character
-        const { data: charData, error: charError } = await supabase
+        const { data: charData, error: charError } = await supabaseAdmin
           .from('characters')
           .upsert({
             uid: data.uid,
@@ -87,7 +87,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Upsert Artifacts
         if (charData) {
           for (const art of artifactsWithCV) {
-            await supabase.from('artifacts').upsert({
+            await supabaseAdmin.from('artifacts').upsert({
               character_uuid: charData.id,
               uid: data.uid,
               slot: art.slot,

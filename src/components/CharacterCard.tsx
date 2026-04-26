@@ -1,13 +1,16 @@
 import { Character } from "@/lib/supabase";
 import Image from "next/image";
+import { CHARACTER_MAP } from "@/lib/metadata";
 
 export default function CharacterCard({ character }: { character: Character }) {
+  const sideIcon = CHARACTER_MAP[character.character_id]?.sideIcon || `UI_AvatarIcon_Side_${character.character_id}`;
+
   return (
     <div className="flex flex-col rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
       <div className="flex items-center gap-4">
         <div className="h-16 w-16 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800 relative">
           <Image
-            src={`https://enka.network/ui/UI_AvatarIcon_Side_${character.character_id}.png`}
+            src={`https://enka.network/ui/${sideIcon}.png`}
             alt="Character"
             fill
             className="object-cover"
