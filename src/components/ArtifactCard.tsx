@@ -1,19 +1,20 @@
 import { Artifact } from "@/lib/supabase";
+import { ARTIFACT_SLOT_MAP, STAT_NAME_MAP } from "@/lib/metadata";
 
 export default function ArtifactCard({ artifact }: { artifact: Artifact }) {
   const formatStat = (type: string, value: number) => {
-    const isPercent = type.endsWith('_PERCENT') || ['FIGHT_PROP_CRITICAL', 'FIGHT_PROP_CRITICAL_HURT', 'FIGHT_PROP_CHARGE_EFFICIENCY', 'FIGHT_PROP_HEAL_ADD'].includes(type);
+    const isPercent = type.endsWith('_PERCENT') || ['FIGHT_PROP_CRITICAL', 'FIGHT_PROP_CRITICAL_HURT', 'FIGHT_PROP_CHARGE_EFFICIENCY', 'FIGHT_PROP_HEAL_ADD'].includes(type) || type.includes('ADD_HURT');
     return isPercent ? `${value.toFixed(1)}%` : Math.round(value).toString();
   };
 
   const getStatName = (type: string) => {
-    return type.replace('FIGHT_PROP_', '').replace(/_/g, ' ');
+    return STAT_NAME_MAP[type] || type.replace('FIGHT_PROP_', '').replace(/_/g, ' ');
   };
 
   return (
     <div className="flex flex-col rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
       <div className="flex items-center justify-between border-b border-zinc-100 pb-2 dark:border-zinc-800">
-        <span className="text-xs font-bold uppercase text-zinc-400">{artifact.slot.replace('EQUIP_', '')}</span>
+        <span className="text-xs font-bold uppercase text-zinc-400">{ARTIFACT_SLOT_MAP[artifact.slot] || artifact.slot}</span>
         <span className="text-xs font-mono font-bold text-blue-500">CV: {artifact.crit_value?.toFixed(1)}</span>
       </div>
 
