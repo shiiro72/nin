@@ -1,5 +1,15 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+## Tech Stack
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
+- **Framework:** Next.js (Pages Router), TypeScript, Tailwind CSS
+- **Icons:** Lucide React
+- **Database:** Supabase
+- **Icons:** Lucide React
+
+## Coding Conventions
+
+- **Naming:** use PascalCase for Components, camelCase for functions/variables
+- **Directories:**
+  - `components/` for reusable components, use atomic design pattern(atoms, molecules, components)
+  - `lib/` for shared logic (APIs)
+  - `src/pages/api/` for route handlers.
+- **Safe Keys:** Never hardcode secrets. Always use `process.env`. Reference `.env.example` for variable names
