@@ -19,7 +19,12 @@ export interface EnkaData {
 const ENKA_BASE_URL = 'https://enka.network/api/uid';
 
 export async function fetchEnkaData(uid: string): Promise<EnkaData> {
-  const response = await fetch(`${ENKA_BASE_URL}/${uid}`);
+  // Use a modern Browser-like User-Agent to avoid being blocked by Cloudflare/Enka
+  const response = await fetch(`${ENKA_BASE_URL}/${uid}`, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    }
+  });
 
   if (!response.ok) {
     if (response.status === 404) {
@@ -28,7 +33,10 @@ export async function fetchEnkaData(uid: string): Promise<EnkaData> {
     if (response.status === 429) {
       throw new Error('Rate limit exceeded. Please try again later.');
     }
-    throw new Error('Failed to fetch data from Enka Network');
+    if (response.status === 500) {
+      throw new Error('Enka Network is currently experiencing issues.');
+    }
+    throw new Error(`Failed to fetch data from Enka Network (Status: ${response.status})`);
   }
 
   const data = await response.json();
