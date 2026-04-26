@@ -1,14 +1,28 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
-const supabaseServiceKey = process.env.NEXT_SUPABASE_SECRET_KEY || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY || '';
+const supabaseServiceKey = process.env.NEXT_SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+
+const isConfigured = supabaseUrl && supabaseAnonKey;
+
+if (!isConfigured) {
+  console.error('Supabase is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY in your .env file.');
+}
 
 // For client-side: read-only
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// We provide a fallback 'placeholder' key if missing to avoid immediate crash on initialization,
+// but it will fail on actual requests with a better error from the server/client.
+// However, createClient checks for key presence.
+export const supabase = isConfigured
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : createClient('https://placeholder.supabase.co', 'placeholder');
 
 // For server-side: privileged operations (upsert)
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+const adminKey = supabaseServiceKey || supabaseAnonKey;
+export const supabaseAdmin = (supabaseUrl && adminKey)
+  ? createClient(supabaseUrl, adminKey)
+  : supabase;
 
 export interface Profile {
   uid: string;
