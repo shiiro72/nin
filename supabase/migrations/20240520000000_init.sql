@@ -44,3 +44,16 @@ CREATE TABLE IF NOT EXISTS artifacts (
 
 -- Index for leaderboard
 CREATE INDEX IF NOT EXISTS idx_characters_crit_value ON characters(crit_value DESC);
+
+-- Enable Row Level Security
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE characters ENABLE ROW LEVEL SECURITY;
+ALTER TABLE artifacts ENABLE ROW LEVEL SECURITY;
+
+-- Public SELECT policies (READ ONLY for public)
+CREATE POLICY "Public profiles are viewable by everyone" ON profiles FOR SELECT USING (true);
+CREATE POLICY "Public characters are viewable by everyone" ON characters FOR SELECT USING (true);
+CREATE POLICY "Public artifacts are viewable by everyone" ON artifacts FOR SELECT USING (true);
+
+-- No public INSERT/UPDATE/DELETE.
+-- These will only be possible via the service_role key used in our API routes.
