@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { supabase, Character, Artifact } from '../lib/supabase';
 import LeaderboardTable from '../components/LeaderboardTable';
 import { ChevronLeft, Trophy, Crown, Sparkles } from 'lucide-react';
-import { ARTIFACT_SLOT_MAP } from '@/lib/metadata';
+import { ARTIFACT_SLOT_MAP, getArtifactSetNameFromIcon } from '@/lib/metadata';
 import ArtifactCard from '@/components/ArtifactCard';
 import { X } from 'lucide-react';
 import { CHARACTER_MAP } from '@/lib/metadata';
@@ -194,7 +194,7 @@ export default function Leaderboard() {
                           {ARTIFACT_SLOT_MAP[art.slot]}
                         </span>
                         <p className="text-[10px] text-zinc-500 font-bold mt-1 uppercase truncate max-w-[120px]">
-                          {art.set_name || 'Set Piece'}
+                          {art.set_name || getArtifactSetNameFromIcon(art.icon)}
                         </p>
                       </td>
                       <td className="px-6 py-4 text-right">

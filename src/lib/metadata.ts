@@ -165,3 +165,51 @@ export const STAT_NAME_MAP: Record<string, string> = {
   FIGHT_PROP_ELEC_ADD_HURT: "Electro DMG%",
   FIGHT_PROP_GRASS_ADD_HURT: "Dendro DMG%",
 };
+
+export function getArtifactSetNameFromIcon(icon: string | undefined): string {
+  if (!icon) return 'Set Piece';
+
+  // Icon format: UI_RelicIcon_15023_4
+  // 15001: Blizzard Strayer
+  // 15002: Heart of Depth
+  // 15003: Tenacity of the Millelith
+  // 15004: Pale Flame
+  // 14001: Gladiator's Finale
+  // 14002: Wanderer's Troupe
+  // 15020: Emblem of Severed Fate
+  // 15021: Shimenawa's Reminiscence
+
+  const setMap: Record<string, string> = {
+    '15001': "Blizzard Strayer",
+    '15002': "Heart of Depth",
+    '15003': "Tenacity of the Millelith",
+    '15004': "Pale Flame",
+    '15005': "Emblem of Severed Fate",
+    '15006': "Shimenawa's Reminiscence",
+    '15007': "Husk of Opulent Dreams",
+    '15008': "Ocean-Hued Clam",
+    '15009': "Vermillion Hereafter",
+    '15010': "Echoes of an Offering",
+    '15011': "Deepwood Memories",
+    '15012': "Gilded Dreams",
+    '15013': "Desert Pavilion Chronicle",
+    '15014': "Flower of Paradise Lost",
+    '15015': "Nymph's Dream",
+    '15016': "Vourukasha's Glow",
+    '15017': "Marechaussee Hunter",
+    '15018': "Golden Troupe",
+    '15019': "Song of Days Past",
+    '15020': "Nighttime Whispers",
+    '15021': "Fragment of Harmonic Whimsy",
+    '15022': "Unfinished Reverie",
+    '15023': "Scroll of the Hero of Burning City",
+    '15024': "Obsidian Codex",
+    '14001': "Gladiator's Finale",
+    '14002': "Wanderer's Troupe",
+    '14003': "Noblesse Oblige",
+    '14004': "Bloodstained Chivalry",
+  };
+
+  const setId = icon.match(/(\d{5})/)?.[1];
+  return (setId && setMap[setId]) || 'Set Piece';
+}

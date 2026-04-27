@@ -6,7 +6,7 @@ import CharacterCard from '../../components/CharacterCard';
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { CHARACTER_MAP, ARTIFACT_SLOT_MAP } from '@/lib/metadata';
+import { CHARACTER_MAP, ARTIFACT_SLOT_MAP, getArtifactSetNameFromIcon } from '@/lib/metadata';
 import { X } from 'lucide-react';
 import ArtifactCard from '@/components/ArtifactCard';
 
@@ -157,7 +157,7 @@ export default function Profile() {
                     <span className="text-xs font-black text-zinc-300 italic w-4 group-hover:text-blue-500/50">#{i+1}</span>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-bold text-zinc-500 uppercase leading-none mb-1">{ARTIFACT_SLOT_MAP[art.slot]}</p>
-                      <p className="text-xs font-bold truncate uppercase">{art.set_name || 'Set Piece'}</p>
+                      <p className="text-xs font-bold truncate uppercase">{art.set_name || getArtifactSetNameFromIcon(art.icon)}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-xs font-black text-blue-500">{art.crit_value?.toFixed(1)} CV</p>

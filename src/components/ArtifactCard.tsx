@@ -1,5 +1,5 @@
 import { Artifact } from "@/lib/supabase";
-import { ARTIFACT_SLOT_MAP, STAT_NAME_MAP, calculateRV } from "@/lib/metadata";
+import { ARTIFACT_SLOT_MAP, STAT_NAME_MAP, calculateRV, getArtifactSetNameFromIcon } from "@/lib/metadata";
 import Image from "next/image";
 
 export default function ArtifactCard({ artifact }: { artifact: Artifact }) {
@@ -21,8 +21,8 @@ export default function ArtifactCard({ artifact }: { artifact: Artifact }) {
 
       <div className="flex items-start justify-between border-b border-zinc-100 pb-4 dark:border-zinc-800">
         <div className="flex items-center gap-3">
-          <div className="relative h-10 w-10 overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1 shadow-inner">
-            {artifact.icon && (
+          <div className="relative h-10 w-10 overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1 shadow-inner flex items-center justify-center">
+            {artifact.icon ? (
                <Image
                  src={`https://enka.network/ui/${artifact.icon}.png`}
                  alt="Artifact"
@@ -30,12 +30,16 @@ export default function ArtifactCard({ artifact }: { artifact: Artifact }) {
                  className="object-contain"
                  unoptimized
                />
+            ) : (
+               <span className="text-[8px] font-black text-zinc-400 text-center leading-tight">
+                 {ARTIFACT_SLOT_MAP[artifact.slot]?.slice(0, 3).toUpperCase() || 'ART'}
+               </span>
             )}
           </div>
           <div>
             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 leading-none">{ARTIFACT_SLOT_MAP[artifact.slot] || artifact.slot}</span>
             <p className="text-[9px] font-bold text-zinc-500 truncate max-w-[150px] mt-0.5 uppercase tracking-tighter">
-              {artifact.set_name || 'SET PIECE'}
+              {artifact.set_name || getArtifactSetNameFromIcon(artifact.icon)}
             </p>
           </div>
         </div>
