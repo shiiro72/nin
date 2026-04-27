@@ -3,8 +3,8 @@ import { Character } from '@/lib/supabase';
 
 export default function LeaderboardTable({ entries, totalCounts }: { entries: (Character & { rank_in_category?: number })[], totalCounts?: Record<number, number> }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 shadow-sm">
-      <table className="w-full text-left text-sm">
+    <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 shadow-sm overflow-x-auto">
+      <table className="w-full text-left text-sm min-w-[600px]">
         <thead className="bg-zinc-50 text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:bg-zinc-800/50">
           <tr>
             <th className="px-6 py-4">Rank</th>
@@ -34,7 +34,7 @@ export default function LeaderboardTable({ entries, totalCounts }: { entries: (C
                 </span>
                 {totalCounts?.[entry.character_id] && (
                   <p className="text-[10px] font-bold text-zinc-400 mt-0.5">
-                    Top {(((entry.rank_in_category || (i + 1)) / totalCounts[entry.character_id]) * 100).toFixed(1)}%
+                    Top {((((entry.rank_in_category || (i + 1)) - 1) / totalCounts[entry.character_id]) * 100).toFixed(1)}%
                   </p>
                 )}
               </td>

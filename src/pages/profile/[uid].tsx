@@ -3,11 +3,12 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { supabase, Profile as ProfileType, Character, Artifact } from '../../lib/supabase';
 import CharacterCard from '../../components/CharacterCard';
-import ArtifactCard from '../../components/ArtifactCard';
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { CHARACTER_MAP, ARTIFACT_SLOT_MAP } from '@/lib/metadata';
+import { X } from 'lucide-react';
+import ArtifactCard from '@/components/ArtifactCard';
 
 export default function Profile() {
   const router = useRouter();
@@ -18,6 +19,7 @@ export default function Profile() {
   const [rankMap, setRankMap] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [selectedChar, setSelectedChar] = useState<Character | null>(null);
+  const [selectedArtifact, setSelectedArtifact] = useState<Artifact | null>(null);
 
   useEffect(() => {
     if (!uid) return;
@@ -147,8 +149,12 @@ export default function Profile() {
               <h2 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-4 px-2">Profile Artifact Leaderboard</h2>
               <div className="space-y-3">
                 {allArtifacts.map((art, i) => (
-                  <div key={art.id} className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                    <span className="text-xs font-black text-zinc-300 italic w-4">#{i+1}</span>
+                  <div
+                    key={art.id}
+                    onClick={() => setSelectedArtifact(art)}
+                    className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 cursor-pointer hover:border-blue-500/50 transition-colors group"
+                  >
+                    <span className="text-xs font-black text-zinc-300 italic w-4 group-hover:text-blue-500/50">#{i+1}</span>
                     <div className="flex-1">
                       <p className="text-[10px] font-bold text-zinc-500 uppercase leading-none mb-1">{ARTIFACT_SLOT_MAP[art.slot]}</p>
                       <p className="text-xs font-bold truncate">Artifact ID: {art.id.slice(0, 8)}</p>
@@ -168,7 +174,7 @@ export default function Profile() {
               <div className="space-y-12">
                 <CharacterCard
                    character={selectedChar}
-                   rankPercent={((rankMap[selectedChar.id] || 1) / (totalCountMap[selectedChar.character_id] || 1)) * 100}
+                   rankPercent={(((rankMap[selectedChar.id] || 1) - 1) / (totalCountMap[selectedChar.character_id] || 1)) * 100}
                 />
 
                 <div className="space-y-6">
@@ -183,7 +189,9 @@ export default function Profile() {
                        const order = ['EQUIP_BRACER', 'EQUIP_NECKLACE', 'EQUIP_SHOES', 'EQUIP_RING', 'EQUIP_DRESS'];
                        return order.indexOf(a.slot) - order.indexOf(b.slot);
                     }).map((art: Artifact) => (
-                      <ArtifactCard key={art.id} artifact={art} />
+                      <div key={art.id} onClick={() => setSelectedArtifact(art)} className="cursor-pointer hover:scale-[1.02] transition-transform">
+                        <ArtifactCard artifact={art} />
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -199,6 +207,35 @@ export default function Profile() {
           </div>
         </div>
       </main>
+
+      {/* Artifact Inspection Modal */}
+      {selectedArtifact && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setSelectedArtifact(null)}
+          />
+          <div className="relative w-full max-w-sm animate-in fade-in zoom-in duration-200">
+            <button
+              onClick={() => setSelectedArtifact(null)}
+              className="absolute -top-12 right-0 p-2 text-white/50 hover:text-white transition-colors cursor-pointer"
+            >
+              <X size={24} />
+            </button>
+            <div className="scale-110 sm:scale-125">
+              <ArtifactCard artifact={selectedArtifact} />
+            </div>
+            <div className="mt-12 text-center">
+               <button
+                 onClick={() => setSelectedArtifact(null)}
+                 className="inline-flex items-center gap-2 bg-white px-6 py-2 rounded-full text-xs font-black italic tracking-tighter text-black hover:bg-zinc-100 transition-colors cursor-pointer"
+               >
+                 CLOSE INSPECTION
+               </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
