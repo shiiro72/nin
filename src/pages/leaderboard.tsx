@@ -5,11 +5,15 @@ import { supabase, Character, Artifact } from '../lib/supabase';
 import LeaderboardTable from '../components/LeaderboardTable';
 import { ChevronLeft, Trophy, Crown, Sparkles } from 'lucide-react';
 import { ARTIFACT_SLOT_MAP } from '@/lib/metadata';
+import ArtifactCard from '@/components/ArtifactCard';
+import { X } from 'lucide-react';
 
 export default function Leaderboard() {
   const [type, setType] = useState<'character' | 'artifact'>('character');
-  const [entries, setEntries] = useState<Character[]>([]);
+  const [entries, setEntries] = useState<(Character & { rank_in_category?: number })[]>([]);
   const [artifactEntries, setArtifactEntries] = useState<Artifact[]>([]);
+  const [selectedArtifact, setSelectedArtifact] = useState<Artifact | null>(null);
+  const [totalCounts, setTotalCounts] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,7 +31,32 @@ export default function Leaderboard() {
           .order('crit_value', { ascending: false })
           .limit(50);
 
-        if (data) setEntries(data as unknown as Character[]);
+        if (data) {
+          const typedChars = data as unknown as Character[];
+          const enrichedChars: (Character & { rank_in_category?: number })[] = [];
+
+          for (const char of typedChars) {
+            const { count: betterCount } = await supabase
+              .from('characters')
+              .select('*', { count: 'exact', head: true })
+              .eq('character_id', char.character_id)
+              .gt('crit_value', char.crit_value || 0);
+
+            enrichedChars.push({ ...char, rank_in_category: (betterCount || 0) + 1 });
+          }
+
+          setEntries(enrichedChars);
+
+          // Fetch total counts for each character in the leaderboard
+          const distinctCharIds = Array.from(new Set(typedChars.map(c => c.character_id)));
+          for (const charId of distinctCharIds) {
+            const { count } = await supabase
+              .from('characters')
+              .select('*', { count: 'exact', head: true })
+              .eq('character_id', charId);
+            setTotalCounts(prev => ({ ...prev, [charId]: count || 1 }));
+          }
+        }
       } else {
         const { data } = await supabase
           .from('artifacts')
@@ -95,7 +124,7 @@ export default function Leaderboard() {
           </div>
         ) : type === 'character' ? (
           entries.length > 0 ? (
-            <LeaderboardTable entries={entries} />
+            <LeaderboardTable entries={entries} totalCounts={totalCounts} />
           ) : (
             <div className="flex h-64 flex-col items-center justify-center rounded-3xl border-2 border-dashed border-zinc-200 dark:border-zinc-800">
               <p className="text-zinc-500 mb-4 font-bold italic">No character entries found.</p>
@@ -118,7 +147,11 @@ export default function Leaderboard() {
                 </thead>
                 <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
                   {artifactEntries.map((art, i) => (
-                    <tr key={art.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group">
+                    <tr
+                      key={art.id}
+                      onClick={() => setSelectedArtifact(art)}
+                      className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group cursor-pointer"
+                    >
                       <td className="px-6 py-4 font-black italic text-zinc-300 group-hover:text-zinc-400 transition-colors">#{i + 1}</td>
                       <td className="px-6 py-4">
                         <Link href={`/profile/${art.uid}`} className="font-bold text-blue-600 hover:underline dark:text-blue-400 cursor-pointer">
@@ -151,6 +184,35 @@ export default function Leaderboard() {
           )
         )}
       </main>
+
+      {/* Artifact Inspection Modal */}
+      {selectedArtifact && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setSelectedArtifact(null)}
+          />
+          <div className="relative w-full max-w-sm animate-in fade-in zoom-in duration-200">
+            <button
+              onClick={() => setSelectedArtifact(null)}
+              className="absolute -top-12 right-0 p-2 text-white/50 hover:text-white transition-colors cursor-pointer"
+            >
+              <X size={24} />
+            </button>
+            <div className="scale-110 sm:scale-125">
+              <ArtifactCard artifact={selectedArtifact} />
+            </div>
+            <div className="mt-12 text-center">
+               <Link
+                 href={`/profile/${selectedArtifact.uid}`}
+                 className="inline-flex items-center gap-2 bg-white px-6 py-2 rounded-full text-xs font-black italic tracking-tighter text-black hover:bg-zinc-100 transition-colors cursor-pointer"
+               >
+                 VIEW OWNER PROFILE
+               </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

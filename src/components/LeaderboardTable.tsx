@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Character } from '@/lib/supabase';
 
-export default function LeaderboardTable({ entries }: { entries: Character[] }) {
+export default function LeaderboardTable({ entries, totalCounts }: { entries: (Character & { rank_in_category?: number })[], totalCounts?: Record<number, number> }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 shadow-sm">
       <table className="w-full text-left text-sm">
@@ -32,6 +32,11 @@ export default function LeaderboardTable({ entries }: { entries: Character[] }) 
                 <span className="font-black italic text-xl tracking-tighter text-blue-600 dark:text-blue-400">
                    {entry.crit_value?.toFixed(1)}
                 </span>
+                {totalCounts?.[entry.character_id] && (
+                  <p className="text-[10px] font-bold text-zinc-400 mt-0.5">
+                    Top {(((entry.rank_in_category || (i + 1)) / totalCounts[entry.character_id]) * 100).toFixed(1)}%
+                  </p>
+                )}
               </td>
             </tr>
           ))}

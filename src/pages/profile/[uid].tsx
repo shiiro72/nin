@@ -14,6 +14,8 @@ export default function Profile() {
   const { uid } = router.query;
   const [profile, setProfile] = useState<ProfileType | null>(null);
   const [characters, setCharacters] = useState<Character[]>([]);
+  const [totalCountMap, setTotalCountMap] = useState<Record<number, number>>({});
+  const [rankMap, setRankMap] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [selectedChar, setSelectedChar] = useState<Character | null>(null);
 
@@ -38,6 +40,23 @@ export default function Profile() {
         const typedChars = charData as unknown as Character[];
         setCharacters(typedChars);
         setSelectedChar(typedChars[0]);
+
+        // Calculate ranks for each character
+        for (const char of typedChars) {
+           const { count: betterCount } = await supabase
+             .from('characters')
+             .select('*', { count: 'exact', head: true })
+             .eq('character_id', char.character_id)
+             .gt('crit_value', char.crit_value || 0);
+
+           const { count: totalCount } = await supabase
+             .from('characters')
+             .select('*', { count: 'exact', head: true })
+             .eq('character_id', char.character_id);
+
+           setRankMap(prev => ({ ...prev, [char.id]: (betterCount || 0) + 1 }));
+           setTotalCountMap(prev => ({ ...prev, [char.character_id]: totalCount || 1 }));
+        }
       }
       setLoading(false);
     };
@@ -147,7 +166,10 @@ export default function Profile() {
           <div className="lg:col-span-8">
             {selectedChar ? (
               <div className="space-y-12">
-                <CharacterCard character={selectedChar} />
+                <CharacterCard
+                   character={selectedChar}
+                   rankPercent={((rankMap[selectedChar.id] || 1) / (totalCountMap[selectedChar.character_id] || 1)) * 100}
+                />
 
                 <div className="space-y-6">
                   <div className="flex items-center justify-between px-2">

@@ -2,7 +2,7 @@ import { Character } from "@/lib/supabase";
 import Image from "next/image";
 import { CHARACTER_MAP } from "@/lib/metadata";
 
-export default function CharacterCard({ character }: { character: Character }) {
+export default function CharacterCard({ character, rankPercent }: { character: Character, rankPercent?: number }) {
   const sideIcon = CHARACTER_MAP[character.character_id]?.sideIcon || `UI_AvatarIcon_Side_${character.character_id}`;
 
   return (
@@ -34,9 +34,11 @@ export default function CharacterCard({ character }: { character: Character }) {
           <p className="text-3xl font-black italic tracking-tighter text-blue-600 dark:text-blue-400">
             {character.crit_value?.toFixed(1)}
           </p>
-          <div className="inline-block rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-bold text-zinc-500 dark:bg-zinc-800">
-            Top 1.2%
-          </div>
+          {rankPercent !== undefined && (
+            <div className="inline-block rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-bold text-zinc-500 dark:bg-zinc-800">
+              Top {rankPercent < 0.1 ? rankPercent.toFixed(2) : rankPercent.toFixed(1)}%
+            </div>
+          )}
         </div>
       </div>
 
