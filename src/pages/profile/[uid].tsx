@@ -218,12 +218,28 @@ export default function Profile() {
           <div className="relative w-full max-w-sm animate-in fade-in zoom-in duration-200">
             <button
               onClick={() => setSelectedArtifact(null)}
-              className="absolute -top-12 right-0 p-2 text-white/50 hover:text-white transition-colors cursor-pointer"
+              className="absolute -top-10 -right-2 p-2 text-white/70 hover:text-white transition-colors cursor-pointer z-10"
             >
-              <X size={24} />
+              <X size={24} strokeWidth={3} />
             </button>
-            <div className="scale-110 sm:scale-125">
+            <div className="scale-105 sm:scale-110">
               <ArtifactCard artifact={selectedArtifact} />
+
+              {/* Wearer Info */}
+              <div className="mt-4 flex items-center justify-between px-4 py-2 bg-zinc-900/50 backdrop-blur rounded-xl border border-white/10">
+                  <div className="flex items-center gap-2">
+                    <div className="relative h-8 w-8 overflow-hidden rounded-full bg-zinc-800">
+                       <Image
+                         src={`https://enka.network/ui/${CHARACTER_MAP[characters.find(c => c.id === selectedArtifact.character_uuid)?.character_id || 10000005]?.sideIcon || 'UI_AvatarIcon_Side_PlayerBoy'}.png`}
+                         fill
+                         className="object-contain"
+                         alt=""
+                         unoptimized
+                       />
+                    </div>
+                    <span className="text-[10px] font-black italic tracking-tighter text-white uppercase">Equipped on this profile</span>
+                  </div>
+              </div>
             </div>
             <div className="mt-12 text-center">
                <button

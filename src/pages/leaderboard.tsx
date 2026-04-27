@@ -7,6 +7,8 @@ import { ChevronLeft, Trophy, Crown, Sparkles } from 'lucide-react';
 import { ARTIFACT_SLOT_MAP } from '@/lib/metadata';
 import ArtifactCard from '@/components/ArtifactCard';
 import { X } from 'lucide-react';
+import { CHARACTER_MAP } from '@/lib/metadata';
+import Image from 'next/image';
 
 export default function Leaderboard() {
   const [type, setType] = useState<'character' | 'artifact'>('character');
@@ -64,12 +66,15 @@ export default function Leaderboard() {
             *,
             profiles:uid (
               nickname
+            ),
+            characters:character_uuid (
+              character_id
             )
           `)
           .order('crit_value', { ascending: false })
           .limit(50);
 
-        if (data) setArtifactEntries(data as unknown as (Artifact & { profiles: { nickname: string } | null })[]);
+        if (data) setArtifactEntries(data as unknown as (Artifact & { profiles: { nickname: string } | null, characters: { character_id: number } | null })[]);
       }
       setLoading(false);
     };
@@ -195,12 +200,30 @@ export default function Leaderboard() {
           <div className="relative w-full max-w-sm animate-in fade-in zoom-in duration-200">
             <button
               onClick={() => setSelectedArtifact(null)}
-              className="absolute -top-12 right-0 p-2 text-white/50 hover:text-white transition-colors cursor-pointer"
+              className="absolute -top-10 -right-2 p-2 text-white/70 hover:text-white transition-colors cursor-pointer z-10"
             >
-              <X size={24} />
+              <X size={24} strokeWidth={3} />
             </button>
-            <div className="scale-110 sm:scale-125">
+            <div className="scale-105 sm:scale-110">
               <ArtifactCard artifact={selectedArtifact} />
+
+              {/* Wearer Info */}
+              {(selectedArtifact as Artifact & { characters: { character_id: number } | null }).characters && (
+                <div className="mt-4 flex items-center justify-between px-4 py-2 bg-zinc-900/50 backdrop-blur rounded-xl border border-white/10">
+                   <div className="flex items-center gap-2">
+                     <div className="relative h-8 w-8 overflow-hidden rounded-full bg-zinc-800">
+                        <Image
+                          src={`https://enka.network/ui/${CHARACTER_MAP[(selectedArtifact as Artifact & { characters: { character_id: number } }).characters.character_id]?.sideIcon || 'UI_AvatarIcon_Side_PlayerBoy'}.png`}
+                          fill
+                          className="object-contain"
+                          alt=""
+                          unoptimized
+                        />
+                     </div>
+                     <span className="text-[10px] font-black italic tracking-tighter text-white uppercase">Currently equipped by character</span>
+                   </div>
+                </div>
+              )}
             </div>
             <div className="mt-12 text-center">
                <Link
