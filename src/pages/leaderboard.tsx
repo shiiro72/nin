@@ -10,12 +10,19 @@ import { X } from 'lucide-react';
 import { CHARACTER_MAP } from '@/lib/metadata';
 import Image from 'next/image';
 
+type EnrichedArtifact = Artifact & {
+  profiles: { nickname: string } | null;
+  characters: { character_id: number } | null;
+  rank?: number;
+};
+
 export default function Leaderboard() {
   const [type, setType] = useState<'character' | 'artifact'>('character');
   const [entries, setEntries] = useState<(Character & { rank_in_category?: number })[]>([]);
-  const [artifactEntries, setArtifactEntries] = useState<Artifact[]>([]);
+  const [artifactEntries, setArtifactEntries] = useState<EnrichedArtifact[]>([]);
   const [selectedArtifact, setSelectedArtifact] = useState<Artifact | null>(null);
   const [totalCounts, setTotalCounts] = useState<Record<number, number>>({});
+  const [totalArtifacts, setTotalArtifacts] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,29 +42,30 @@ export default function Leaderboard() {
 
         if (data) {
           const typedChars = data as unknown as Character[];
-          const enrichedChars: (Character & { rank_in_category?: number })[] = [];
 
-          for (const char of typedChars) {
+          const enrichedChars = await Promise.all(typedChars.map(async (char) => {
             const { count: betterCount } = await supabase
               .from('characters')
               .select('*', { count: 'exact', head: true })
               .eq('character_id', char.character_id)
               .gt('crit_value', char.crit_value || 0);
 
-            enrichedChars.push({ ...char, rank_in_category: (betterCount || 0) + 1 });
-          }
+            return { ...char, rank_in_category: (betterCount || 0) + 1 };
+          }));
 
           setEntries(enrichedChars);
 
           // Fetch total counts for each character in the leaderboard
           const distinctCharIds = Array.from(new Set(typedChars.map(c => c.character_id)));
-          for (const charId of distinctCharIds) {
+          const counts: Record<number, number> = {};
+          await Promise.all(distinctCharIds.map(async (charId) => {
             const { count } = await supabase
               .from('characters')
               .select('*', { count: 'exact', head: true })
               .eq('character_id', charId);
-            setTotalCounts(prev => ({ ...prev, [charId]: count || 1 }));
-          }
+            counts[charId] = count || 1;
+          }));
+          setTotalCounts(counts);
         }
       } else {
         const { data } = await supabase
@@ -74,7 +82,24 @@ export default function Leaderboard() {
           .order('crit_value', { ascending: false })
           .limit(50);
 
-        if (data) setArtifactEntries(data as unknown as (Artifact & { profiles: { nickname: string } | null, characters: { character_id: number } | null })[]);
+        if (data) {
+          const typedArts = data as unknown as EnrichedArtifact[];
+
+          const [enrichedArts, { count: totalArtCount }] = await Promise.all([
+            Promise.all(typedArts.map(async (art) => {
+              const { count: betterCount } = await supabase
+                .from('artifacts')
+                .select('*', { count: 'exact', head: true })
+                .gt('crit_value', art.crit_value || 0);
+
+              return { ...art, rank: (betterCount || 0) + 1 };
+            })),
+            supabase.from('artifacts').select('*', { count: 'exact', head: true })
+          ]);
+
+          setArtifactEntries(enrichedArts);
+          setTotalArtifacts(totalArtCount || 1);
+        }
       }
       setLoading(false);
     };
@@ -151,16 +176,16 @@ export default function Leaderboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                  {artifactEntries.map((art, i) => (
+                  {artifactEntries.map((art) => (
                     <tr
                       key={art.id}
                       onClick={() => setSelectedArtifact(art)}
                       className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group cursor-pointer"
                     >
-                      <td className="px-6 py-4 font-black italic text-zinc-300 group-hover:text-zinc-400 transition-colors">#{i + 1}</td>
+                      <td className="px-6 py-4 font-black italic text-zinc-300 group-hover:text-zinc-400 transition-colors">#{art.rank}</td>
                       <td className="px-6 py-4">
                         <Link href={`/profile/${art.uid}`} className="font-bold text-blue-600 hover:underline dark:text-blue-400 cursor-pointer">
-                          {(art as Artifact & { profiles: { nickname: string } | null }).profiles?.nickname || 'Unknown'}
+                          {art.profiles?.nickname || 'Unknown'}
                         </Link>
                         <p className="text-[10px] text-zinc-500 font-bold mt-0.5">UID {art.uid}</p>
                       </td>
@@ -173,6 +198,9 @@ export default function Leaderboard() {
                         <span className="font-black italic text-xl tracking-tighter text-blue-600 dark:text-blue-400">
                           {art.crit_value?.toFixed(1)}
                         </span>
+                        <p className="text-[10px] font-black uppercase italic text-zinc-400 mt-0.5 tracking-tighter">
+                          Top {Math.ceil((((art.rank || 1) - 1) / totalArtifacts) * 100) || 1}%
+                        </p>
                       </td>
                     </tr>
                   ))}

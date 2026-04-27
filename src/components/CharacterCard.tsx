@@ -35,8 +35,8 @@ export default function CharacterCard({ character, rankPercent }: { character: C
             {character.crit_value?.toFixed(1)}
           </p>
           {rankPercent !== undefined && (
-            <div className="inline-block rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-bold text-zinc-500 dark:bg-zinc-800">
-              Top {rankPercent.toFixed(1)}%
+            <div className="inline-block rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-black uppercase italic text-zinc-500 dark:bg-zinc-800 tracking-tighter shadow-sm">
+              Top {Math.ceil(rankPercent) || 1}%
             </div>
           )}
         </div>

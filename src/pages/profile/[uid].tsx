@@ -184,12 +184,12 @@ export default function Profile() {
                        5 PIECES
                     </span>
                   </div>
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                     {selectedChar.artifacts?.sort((a: Artifact, b: Artifact) => {
                        const order = ['EQUIP_BRACER', 'EQUIP_NECKLACE', 'EQUIP_SHOES', 'EQUIP_RING', 'EQUIP_DRESS'];
                        return order.indexOf(a.slot) - order.indexOf(b.slot);
                     }).map((art: Artifact) => (
-                      <div key={art.id} onClick={() => setSelectedArtifact(art)} className="cursor-pointer hover:scale-[1.02] transition-transform">
+                      <div key={art.id} onClick={() => setSelectedArtifact(art)} className="cursor-pointer">
                         <ArtifactCard artifact={art} />
                       </div>
                     ))}

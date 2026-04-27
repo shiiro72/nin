@@ -100,7 +100,8 @@ export function parseCharacterData(avatarInfo: EnkaAvatarInfo) {
         value: sub.statValue || sub.propValue || 0
       })) || [],
       level: artifact.reliquary.level,
-      rarity: artifact.flat.rankLevel
+      rarity: artifact.flat.rankLevel,
+      icon: artifact.flat.icon
     }));
 
   const weapon = (equipList || []).find((equip) => equip.flat.itemType === 'ITEM_WEAPON');

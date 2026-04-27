@@ -33,8 +33,8 @@ export default function LeaderboardTable({ entries, totalCounts }: { entries: (C
                    {entry.crit_value?.toFixed(1)}
                 </span>
                 {totalCounts?.[entry.character_id] && (
-                  <p className="text-[10px] font-bold text-zinc-400 mt-0.5">
-                    Top {((((entry.rank_in_category || (i + 1)) - 1) / totalCounts[entry.character_id]) * 100).toFixed(1)}%
+                  <p className="text-[10px] font-black uppercase italic text-zinc-400 mt-0.5 tracking-tighter">
+                    Top {Math.ceil((((entry.rank_in_category || (i + 1)) - 1) / totalCounts[entry.character_id]) * 100) || 1}%
                   </p>
                 )}
               </td>

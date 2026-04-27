@@ -75,4 +75,5 @@ export interface Artifact {
     value: number;
   }[];
   crit_value: number;
+  icon?: string;
 }
