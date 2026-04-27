@@ -193,6 +193,9 @@ export default function Leaderboard() {
                         <span className="rounded bg-zinc-100 px-2 py-1 text-[10px] font-black uppercase tracking-tighter text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
                           {ARTIFACT_SLOT_MAP[art.slot]}
                         </span>
+                        <p className="text-[10px] text-zinc-500 font-bold mt-1 uppercase truncate max-w-[120px]">
+                          {art.set_name || 'Set Piece'}
+                        </p>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <span className="font-black italic text-xl tracking-tighter text-blue-600 dark:text-blue-400">

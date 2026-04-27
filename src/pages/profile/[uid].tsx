@@ -155,9 +155,9 @@ export default function Profile() {
                     className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800 cursor-pointer hover:border-blue-500/50 transition-colors group"
                   >
                     <span className="text-xs font-black text-zinc-300 italic w-4 group-hover:text-blue-500/50">#{i+1}</span>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-bold text-zinc-500 uppercase leading-none mb-1">{ARTIFACT_SLOT_MAP[art.slot]}</p>
-                      <p className="text-xs font-bold truncate">Artifact ID: {art.id.slice(0, 8)}</p>
+                      <p className="text-xs font-bold truncate uppercase">{art.set_name || 'Set Piece'}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-xs font-black text-blue-500">{art.crit_value?.toFixed(1)} CV</p>
