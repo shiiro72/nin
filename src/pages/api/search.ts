@@ -98,6 +98,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               main_stat: art.mainStat,
               sub_stats: art.subStats,
               crit_value: art.crit_value,
+              icon: art.icon,
             }, { onConflict: 'character_uuid,slot' });
           }
         }

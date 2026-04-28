@@ -4,6 +4,7 @@ export const CHARACTER_MAP: Record<number, { sideIcon: string }> = {
   10000002: { sideIcon: "UI_AvatarIcon_Side_Ayaka" },
   10000003: { sideIcon: "UI_AvatarIcon_Side_Qin" },
   10000005: { sideIcon: "UI_AvatarIcon_Side_PlayerBoy" },
+  10000006: { sideIcon: "UI_AvatarIcon_Side_Lisa" },
   10000007: { sideIcon: "UI_AvatarIcon_Side_PlayerGirl" },
   10000014: { sideIcon: "UI_AvatarIcon_Side_Barbara" },
   10000015: { sideIcon: "UI_AvatarIcon_Side_Kaeya" },
@@ -93,7 +94,46 @@ export const CHARACTER_MAP: Record<number, { sideIcon: string }> = {
   10000104: { sideIcon: "UI_AvatarIcon_Side_Chasca" },
   10000105: { sideIcon: "UI_AvatarIcon_Side_Olorun" },
   10000106: { sideIcon: "UI_AvatarIcon_Side_Mavuika" },
+  10000107: { sideIcon: "UI_AvatarIcon_Side_Citlali" },
+  10000108: { sideIcon: "UI_AvatarIcon_Side_Lanyan" },
+  10000109: { sideIcon: "UI_AvatarIcon_Side_Mizuki" },
+  10000110: { sideIcon: "UI_AvatarIcon_Side_Iansan" },
+  10000111: { sideIcon: "UI_AvatarIcon_Side_Varesa" },
+  10000112: { sideIcon: "UI_AvatarIcon_Side_Escoffier" },
+  10000113: { sideIcon: "UI_AvatarIcon_Side_Ifa" },
+  10000114: { sideIcon: "UI_AvatarIcon_Side_SkirkNew" },
+  10000115: { sideIcon: "UI_AvatarIcon_Side_Dahlia" },
+  10000116: { sideIcon: "UI_AvatarIcon_Side_Ineffa" },
+  10000119: { sideIcon: "UI_AvatarIcon_Side_Lauma" },
+  10000120: { sideIcon: "UI_AvatarIcon_Side_Flins" },
+  10000121: { sideIcon: "UI_AvatarIcon_Side_Aino" },
+  10000122: { sideIcon: "UI_AvatarIcon_Side_Nefer" },
+  10000123: { sideIcon: "UI_AvatarIcon_Side_Durin" },
+  10000124: { sideIcon: "UI_AvatarIcon_Side_Jahoda" },
 };
+
+export const MAX_STAT_ROLLS: Record<string, number> = {
+  FIGHT_PROP_HP: 298.75,
+  FIGHT_PROP_ATTACK: 19.45,
+  FIGHT_PROP_DEFENSE: 23.15,
+  FIGHT_PROP_HP_PERCENT: 5.83,
+  FIGHT_PROP_ATTACK_PERCENT: 5.83,
+  FIGHT_PROP_DEFENSE_PERCENT: 7.29,
+  FIGHT_PROP_CRITICAL: 3.89,
+  FIGHT_PROP_CRITICAL_HURT: 7.77,
+  FIGHT_PROP_CHARGE_EFFICIENCY: 6.48,
+  FIGHT_PROP_ELEMENT_MASTERY: 23.31,
+};
+
+export function calculateRV(substats: { type: string; value: number }[]): number {
+  return substats.reduce((total, sub) => {
+    const maxRoll = MAX_STAT_ROLLS[sub.type];
+    if (maxRoll) {
+      return total + (sub.value / maxRoll) * 100;
+    }
+    return total;
+  }, 0);
+}
 
 export const ARTIFACT_SLOT_MAP: Record<string, string> = {
   EQUIP_BRACER: "Flower",
@@ -125,3 +165,51 @@ export const STAT_NAME_MAP: Record<string, string> = {
   FIGHT_PROP_ELEC_ADD_HURT: "Electro DMG%",
   FIGHT_PROP_GRASS_ADD_HURT: "Dendro DMG%",
 };
+
+export function getArtifactSetNameFromIcon(icon: string | undefined): string {
+  if (!icon) return 'Set Piece';
+
+  // Icon format: UI_RelicIcon_15023_4
+  // 15001: Blizzard Strayer
+  // 15002: Heart of Depth
+  // 15003: Tenacity of the Millelith
+  // 15004: Pale Flame
+  // 14001: Gladiator's Finale
+  // 14002: Wanderer's Troupe
+  // 15020: Emblem of Severed Fate
+  // 15021: Shimenawa's Reminiscence
+
+  const setMap: Record<string, string> = {
+    '15001': "Blizzard Strayer",
+    '15002': "Heart of Depth",
+    '15003': "Tenacity of the Millelith",
+    '15004': "Pale Flame",
+    '15005': "Emblem of Severed Fate",
+    '15006': "Shimenawa's Reminiscence",
+    '15007': "Husk of Opulent Dreams",
+    '15008': "Ocean-Hued Clam",
+    '15009': "Vermillion Hereafter",
+    '15010': "Echoes of an Offering",
+    '15011': "Deepwood Memories",
+    '15012': "Gilded Dreams",
+    '15013': "Desert Pavilion Chronicle",
+    '15014': "Flower of Paradise Lost",
+    '15015': "Nymph's Dream",
+    '15016': "Vourukasha's Glow",
+    '15017': "Marechaussee Hunter",
+    '15018': "Golden Troupe",
+    '15019': "Song of Days Past",
+    '15020': "Nighttime Whispers",
+    '15021': "Fragment of Harmonic Whimsy",
+    '15022': "Unfinished Reverie",
+    '15023': "Scroll of the Hero of Burning City",
+    '15024': "Obsidian Codex",
+    '14001': "Gladiator's Finale",
+    '14002': "Wanderer's Troupe",
+    '14003': "Noblesse Oblige",
+    '14004': "Bloodstained Chivalry",
+  };
+
+  const setId = icon.match(/(\d{5})/)?.[1];
+  return (setId && setMap[setId]) || 'Set Piece';
+}
