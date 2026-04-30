@@ -144,6 +144,43 @@ export const ARTIFACT_SLOT_MAP: Record<string, string> = {
 };
 
 export const STAT_NAME_MAP: Record<string, string> = {
+  // Numeric keys used in Enka fightPropMap
+  "1": "Base HP",
+  "2": "HP",
+  "3": "HP",
+  "4": "Base ATK",
+  "5": "ATK",
+  "6": "ATK",
+  "7": "Base DEF",
+  "8": "DEF",
+  "9": "DEF",
+  "20": "Crit Rate",
+  "22": "Crit DMG",
+  "23": "Energy Recharge",
+  "26": "Healing Bonus",
+  "27": "Incoming Healing Bonus",
+  "28": "Elemental Mastery",
+  "29": "Physical Res",
+  "30": "Physical DMG Bonus",
+  "40": "Pyro DMG Bonus",
+  "41": "Electro DMG Bonus",
+  "42": "Hydro DMG Bonus",
+  "43": "Dendro DMG Bonus",
+  "44": "Anemo DMG Bonus",
+  "45": "Geo DMG Bonus",
+  "46": "Cryo DMG Bonus",
+  "50": "Pyro Res",
+  "51": "Electro Res",
+  "52": "Hydro Res",
+  "53": "Dendro Res",
+  "54": "Anemo Res",
+  "55": "Geo Res",
+  "56": "Cryo Res",
+  "2000": "Max HP",
+  "2001": "ATK",
+  "2002": "DEF",
+
+  // String keys used in artifact stats
   FIGHT_PROP_BASE_ATTACK: "Base ATK",
   FIGHT_PROP_HP: "HP",
   FIGHT_PROP_ATTACK: "ATK",
@@ -165,6 +202,46 @@ export const STAT_NAME_MAP: Record<string, string> = {
   FIGHT_PROP_ELEC_ADD_HURT: "Electro DMG%",
   FIGHT_PROP_GRASS_ADD_HURT: "Dendro DMG%",
 };
+
+export const CORE_STATS = [
+  { id: "2000", name: "HP" },
+  { id: "2001", name: "ATK" },
+  { id: "2002", name: "DEF" },
+  { id: "28", name: "EM" },
+  { id: "20", name: "Crit Rate", percentage: true },
+  { id: "22", name: "Crit DMG", percentage: true },
+  { id: "23", name: "ER", percentage: true },
+];
+
+export const ELEMENT_DMG_STATS = [
+  { id: "30", name: "Physical DMG" },
+  { id: "40", name: "Pyro DMG" },
+  { id: "41", name: "Electro DMG" },
+  { id: "42", name: "Hydro DMG" },
+  { id: "43", name: "Dendro DMG" },
+  { id: "44", name: "Anemo DMG" },
+  { id: "45", name: "Geo DMG" },
+  { id: "46", name: "Cryo DMG" },
+];
+
+export function getGachaArtUrl(characterId: number): string {
+  const charData = CHARACTER_MAP[characterId];
+  if (!charData) return `https://enka.network/ui/UI_AvatarIcon_${characterId}.png`;
+
+  // Extract name from UI_AvatarIcon_Side_Name
+  const name = charData.sideIcon.replace("UI_AvatarIcon_Side_", "");
+
+  // Special cases for Traveler
+  if (name === "PlayerBoy" || name === "PlayerGirl") {
+    return `https://enka.network/ui/UI_AvatarIcon_${name}.png`; // Usually portrait as fallback
+  }
+
+  return `https://enka.network/ui/UI_Gacha_AvatarIcon_${name}.png`;
+}
+
+export function getTalentIconUrl(icon: string): string {
+  return `https://enka.network/ui/${icon}.png`;
+}
 
 export function getArtifactSetNameFromIcon(icon: string | undefined): string {
   if (!icon) return 'Set Piece';
