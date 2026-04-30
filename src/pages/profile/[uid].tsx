@@ -99,9 +99,9 @@ export default function Profile() {
       </nav>
 
       <main className="mx-auto max-w-7xl px-6 py-10">
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3 xl:grid-cols-4">
           {/* Character List Sidebar */}
-          <div className="lg:col-span-4 space-y-8">
+          <div className="lg:col-span-1 space-y-8">
             <section>
               <h2 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-4 px-2">Showcase Characters</h2>
               <div className="grid grid-cols-1 gap-2">
@@ -169,7 +169,7 @@ export default function Profile() {
           </div>
 
           {/* Character Detail View */}
-          <div className="lg:col-span-8">
+          <div className="lg:col-span-2 xl:col-span-3">
             {selectedChar ? (
               <div className="space-y-12">
                 <CharacterCard
